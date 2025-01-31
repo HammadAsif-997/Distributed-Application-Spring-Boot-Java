@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center">
+
+<!-- Main Heading -->
+<h1 class="text-5xl font-bold text-gray-800 mt-6">Distributed Application</h1>
+
+<header class="text-center py-6 bg-blue-600 text-white w-full mt-4">
+  <h1 class="text-4xl font-bold">Dashboard</h1>
+</header>
+
+<div class="container mx-auto mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <!-- Tile for Product Catalog -->
+  <div class="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition-shadow">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-600">Product Catalog</h3>
+    <p class="text-gray-600 mb-6">Browse and manage all available products.</p>
+    <a href="/products" class="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">View All Products</a>
+  </div>
+
+  <!-- Tile for All Users -->
+  <div class="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition-shadow">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-600">All Users</h3>
+    <p class="text-gray-600 mb-6">View and manage user accounts.</p>
+    <a href="/users/get-all-users" class="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">View All Users</a>
+  </div>
+
+  <!-- Example Additional Tile -->
+  <div class="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition-shadow">
+    <h3 class="text-2xl font-semibold mb-4 text-blue-600">Shopping Cart</h3>
+    <p class="text-gray-600 mb-6">Check your shopping cart and manage orders.</p>
+    <a href="/cart" class="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">Go to Cart</a>
+  </div>
+</div>
+
+</body>
+</html>

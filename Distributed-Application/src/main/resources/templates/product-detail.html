@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 0;
+        background-color: #f9f9f9;
+    }
+
+    h3 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    #reviewForm {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    #reviewForm label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    #reviewForm input, 
+    #reviewForm textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    #reviewForm button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    #reviewForm button:hover {
+        background-color: #0056b3;
+    }
+
+    #reviews {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .review {
+        border-bottom: 1px solid #ddd;
+        /* padding: 15px 0; */
+    }
+
+    .review:last-child {
+        border-bottom: none;
+    }
+
+    .review strong {
+        color: #007bff;
+        font-size: 16px;
+    }
+
+    .review p {
+        margin: 5px 0;
+        color: #555;
+    }
+
+    .review .date {
+        font-size: 12px;
+        color: #888;
+    }
+</style>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+<!-- Container -->
+<div class="bg-white rounded-lg shadow-lg max-w-2xl w-full p-8">
+    <!-- Action Buttons -->
+    <div class="mt-6 flex justify-between">
+        <a href="/products" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors duration-300">
+            Back to Catalog
+        </a>
+    </div>
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Product Detail</h1>
+
+    <!-- Product Information -->
+    <div class="space-y-4">
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-semibold text-gray-800" th:text="${product.name}">Product Name</h2>
+            <p class="text-xl text-gray-700 font-semibold"><span th:text=" ${product.price} + ' EUR'">50.00</span></p>
+        </div>
+        
+        <p class="text-lg text-gray-600">Color: <span th:text="${product.color}">Blue</span></p>
+        <p class="text-lg text-gray-600">Size: <span th:text="${product.size}">M</span></p>
+        
+        <div class="flex items-center justify-between">
+            <p class="text-lg text-gray-600">Available Stock: <span th:text="${product.stock}">10</span></p>
+            <p th:if="${product.isSoldOut}" class="text-red-600 font-semibold">Sold Out</p>
+        </div>
+
+        <!-- Add to Cart Form -->
+        <form th:unless="${product.isSoldOut}" th:action="@{/cart/add/{productId}(productId=${product.id})}" method="post">
+            <button class="bg-blue-500 text-white py-2 px-6 rounded-lg mt-4 w-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+                Add to Cart
+            </button>
+        </form>
+    </div>
+
+    
+
+    <section>
+    <br>
+        <h3><strong>Leave A Review</strong></h3>
+        <!-- <form id="reviewForm" action="#" method="POST"> -->
+            
+        <form id="reviewForm" onsubmit="sendReview(event)">
+            <input type="hidden" id="productId" name="productId" th:value="${product.id}">
+            <input type="hidden" id="productName" name="productName" th:value="${product.name}">
+            <label for="userName">Username:</label>
+            <input type="text" id="userName" name="userName" required>
+            <label for="reviewText">Review:</label>
+            <textarea id="reviewText" name="reviewText" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+            
+    </section>
+    
+    <section id="reviews">
+        <h3><strong>Customer Reviews</strong> </h3>
+        <div id="reviewPlaceholder">
+            <div class="review" th:each="review : ${reviews}">
+                <p>Username: <strong th:text="${review.userName}">Username</strong></p>
+                <p th:text="${review.reviewText}">Review Text</p>
+                <p class="date" th:text="${review.date}">Date</p>
+            </div>
+        </div>
+    </section>
+    
+    
+    
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <script>
+        const socket = new SockJS('/review-websocket');
+        const stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+
+            // Subscribe to topic
+            stompClient.subscribe('/topic/reviews', function (message) {
+                const review = JSON.parse(message.body);
+                displayReview(review);
+            });
+        });
+
+        // Send review
+        function sendReview(event) {
+            event.preventDefault();
+            const review = {
+                productId: document.getElementById('productId').value,
+                productName: document.getElementById('productName').value,
+                userName: document.getElementById('userName').value,
+                reviewText: document.getElementById('reviewText').value
+            };
+
+            stompClient.send('/shop/review', {}, JSON.stringify(review));
+            document.getElementById('reviewForm').reset();
+        }
+
+        // Render review
+        function displayReview(review) {
+            const reviewDiv = document.createElement('div');
+            reviewDiv.innerHTML = `
+            <div class="review">
+                <p>Username: <strong th:text="${review.userName}">Username</strong></p>
+                <p th:text="${review.reviewText}">Review Text</p>
+                <p  class="date" ><em>${review.date}</em></p>
+            </div>
+            `;
+            document.getElementById('reviewPlaceholder').appendChild(reviewDiv);
+        }
+    </script>
+
+
+</body>
+</html>
