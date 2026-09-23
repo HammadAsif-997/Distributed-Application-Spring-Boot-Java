@@ -1,4 +1,2 @@
-/mvnw text eol=lf
-*.cmd text eol=crlf
 JavaDocs/* linguist-generated=true
 target/* linguist-generated=true
