@@ -7,19 +7,19 @@ A server-rendered e-commerce application built with **Spring Boot 3.3.5 / Java 1
 ## 🖼️ Screenshots
 
 **Product Management** — list, edit, delete
-![Product management](distapp_screenshots/product-management.png)
+![Product management](Screenshots/product-management.png)
 
 **Add / Edit Product**
-![Add or edit product](distapp_screenshots/add-edit-product.png)
+![Add or edit product](Screenshots/add-edit-product.png)
 
 **Product Detail**
-![Product detail](distapp_screenshots/product-detail.png)
+![Product detail](Screenshots/product-detail.png)
 
 **Shopping Cart**
-![Shopping cart](distapp_screenshots/shopping-cart.png)
+![Shopping cart](Screenshots/shopping-cart.png)
 
 **User Management**
-![User management](distapp_screenshots/user-management.png)
+![User management](Screenshots/user-management.png)
 
 ---
 
